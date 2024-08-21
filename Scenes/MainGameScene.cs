@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ﻿using Raylib_cs;
 
 namespace spaceInvadersRaylib.Scenes;
@@ -38,4 +39,29 @@ public class MainGameScene : IScene
         }
         return player.Update(enemies);
     }
+=======
+﻿using Raylib_cs;
+
+namespace spaceInvadersRaylib.Scenes;
+
+public class MainGameScene : IScene
+{
+    private Player player;
+
+    public MainGameScene()
+    {
+        player = new Player();
+    }
+    public void Draw()
+    {
+        Raylib.ClearBackground(Color.Black);
+        player.Draw();
+    }
+
+    public SceneType Update()
+    {
+        player.Update();
+        return SceneType.MainGame;
+    }
+>>>>>>> 418dfdb3ed773db8e702e97e6dce5cdbce3295a8
 }
