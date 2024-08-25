@@ -1,6 +1,6 @@
-<<<<<<< HEAD
 ﻿using System.Numerics;
 using Raylib_cs;
+using spaceInvadersRaylib.Powerups;
 using spaceInvadersRaylib.Scenes;
 
 namespace spaceInvadersRaylib;
@@ -13,6 +13,8 @@ public class Player
     public int speed;
     public Color color = Color.Red;
     public List<Bullet> bullets;
+    private Random random;
+    private List<IPowerup> powerups;
 
     public Player()
     {
@@ -21,6 +23,8 @@ public class Player
         this.r = 20;
         this.speed = 5;
         this.bullets = new List<Bullet>();
+        this.powerups = new List<IPowerup>();
+        this.random = new Random();
     }
     public void Draw()
     {
@@ -28,6 +32,11 @@ public class Player
         foreach (Bullet bullet in this.bullets)
         {
             bullet.Draw();
+        }
+
+        foreach (IPowerup powerup in this.powerups)
+        {
+            powerup.Draw();
         }
     }
 
@@ -51,9 +60,25 @@ public class Player
             y += speed;
         }
 
-        if (Raylib.IsMouseButtonPressed(MouseButton.Left))
+        if (Raylib.IsMouseButtonPressed(MouseButton.Left) && bullets.Count < Globals.maxPlayerBullets)
         {
             this.Shoot();
+        }
+
+        for (int i = 0; i < this.powerups.Count; i++)
+        {
+            powerups[i].Update();
+            if (powerups[i].IsOffScreen())
+            {
+                powerups.RemoveAt(i);
+                i--;
+            }
+            else if (powerups[i].CollidesWithPlayer(this))
+            {
+                powerups[i].Visit(this);
+                powerups.RemoveAt(i);
+                i--;
+            }
         }
 
         for (int i = 0; i < bullets.Count; i++)
@@ -92,7 +117,18 @@ public class Player
                         new Vector2(enemies[j].x, enemies[j].y), enemies[j].r))
                 {
                     if (!bulletRemovalIdx.Contains(i)) bulletRemovalIdx.Add(i);
+                    if (random.Next(0, 100) <= 1)
+                    {
+                        int powerUp = random.Next(0, 0);
+                        switch (powerUp)
+                        {
+                            case 0:
+                                powerups.Add(new IncreasedNumberOfBullets(enemies[j].x, enemies[j].y, 5, Color.DarkPurple));
+                                break;
+                        }
+                    }
                     if (!enemyRemovalIdx.Contains(j)) enemyRemovalIdx.Add(j);
+                    Globals.enemyDx *= -1;
                 }
             }
         }
@@ -101,6 +137,7 @@ public class Player
         for (int i = bulletRemovalIdx.Count - 1; i >= 0; i--)
         {
             bullets.RemoveAt(bulletRemovalIdx[i]);
+            Console.WriteLine(bullets.Count);
         }
 
         for (int j = enemyRemovalIdx.Count - 1; j >= 0; j--)
@@ -142,80 +179,4 @@ public class Player
         Bullet bullet = new Bullet(this.x, this.y, -5, Color.Red);
         this.bullets.Add(bullet);
     }
-=======
-﻿using Raylib_cs;
-
-namespace spaceInvadersRaylib;
-
-public class Player
-{
-    public int x;
-    public int y;
-    public int r;
-    public int speed;
-    public Color color = Color.Red;
-    public List<Bullet> bullets;
-
-    public Player()
-    {
-        this.x = Globals.screenWidth/2;
-        this.y = Globals.screenHeight - 50;
-        this.r = 20;
-        this.speed = 5;
-        this.bullets = new List<Bullet>();
-    }
-    public void Draw()
-    {
-        Raylib.DrawCircle(x, y, r, color);
-        foreach (Bullet bullet in this.bullets)
-        {
-            bullet.Draw();
-        }
-    }
-
-    public void Update()
-    {
-        if (Raylib.IsKeyDown(KeyboardKey.A) || Raylib.IsKeyDown(KeyboardKey.Left))
-        {
-            x -= speed;
-        } else if (Raylib.IsKeyDown(KeyboardKey.D) || Raylib.IsKeyDown(KeyboardKey.Right))
-        {
-            x += speed;
-        }
-
-        if (Raylib.IsKeyDown(KeyboardKey.W) || Raylib.IsKeyDown(KeyboardKey.Up))
-        {
-            y -= speed;
-        } else if (Raylib.IsKeyDown(KeyboardKey.S) || Raylib.IsKeyDown(KeyboardKey.Down))
-        {
-            y += speed;
-        }
-
-        if (Raylib.IsKeyPressed(KeyboardKey.Space))
-        {
-            this.Shoot();
-        }
-
-        for (int i = 0; i < bullets.Count; i++)
-        {
-            bullets[i].Update();
-            if (bullets[i].IsOffScreen())
-            {
-                bullets.RemoveAt(i);
-                i--;
-            }
-        }
-
-        if(this.x < this.r) this.x = this.r; // Left wall
-        if(this.x > Globals.screenWidth - this.r) this.x = Globals.screenWidth - this.r; // Right wall
-        if(this.y < this.r) this.y = this.r; // Top wall
-        if(this.y > Globals.screenHeight - this.r) this.y = Globals.screenHeight - this.r; // Bottom wall
-    }
-
-    private void Shoot()
-    { 
-        Bullet bullet = new Bullet(this.x, this.y, -5);
-        this.bullets.Add(bullet);
-    }
->>>>>>> 418dfdb3ed773db8e702e97e6dce5cdbce3295a8
 }

@@ -1,4 +1,5 @@
-﻿using Raylib_cs;
+﻿using System.Diagnostics.Metrics;
+using Raylib_cs;
 
 namespace spaceInvadersRaylib;
 
@@ -9,9 +10,9 @@ public class Enemy
     public Color color;
     public int r;
     public List<Bullet> bullets;
-    private int counter;
     private int bulletCounter;
     private Random random;
+    private int counter;
 
     public Enemy(int x, int y, int r, bool canShoot)
     {
@@ -22,9 +23,9 @@ public class Enemy
 
         this.bullets = new List<Bullet>();
         this.color = new Color(Raylib.GetRandomValue(0, 255), Raylib.GetRandomValue(0, 255), Raylib.GetRandomValue(0, 255), 255);
-        this.counter = 0;
         this.random = new Random();
         this.bulletCounter = this.random.Next(0, 100);
+        this.counter = 0;
     }
 
     public void Draw()
@@ -53,14 +54,17 @@ public class Enemy
                 i--;
             }
         }
-        if (counter % 100 == 0) this.x += 5;
-        else if(counter%100 == 25) this.x += 10;
-        else if (counter % 100 == 50) this.x -= 5; // Simple pivot
-        else if(counter%100 == 75) this.x -= 10;
-        if (counter > 100) counter = 0;
+
+        if (this.x < this.r || this.x > Globals.screenWidth - this.r)
+        {
+            Globals.enemyDx *= -1;
+        }
+        
+        if (this.counter%50 == 0)this.x += Globals.enemyDx;
         if(bulletCounter > 300) bulletCounter = 0;
-        counter++;
+        if(this.counter > 50) this.counter = 0;
         bulletCounter++;
+        this.counter++;
     }
 
     private void Shoot()

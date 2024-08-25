@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 ﻿using Raylib_cs;
 
 namespace spaceInvadersRaylib.Scenes;
@@ -8,18 +7,20 @@ public class MainGameScene : IScene
     private Player player;
     private List<Enemy> enemies;
     private int numOfEnemies;
+    private int numOfRows;
     private const int TILE_SIZE = 50;
+    private int increaseLevelCounter;
+    private const int MAX_LVL_COUNTER = 100;
 
     public MainGameScene()
     {
         this.player = new Player();
         this.numOfEnemies = 10;
+        this.increaseLevelCounter = MAX_LVL_COUNTER;
+        numOfRows = 1;
         // Add enemies
         this.enemies = new List<Enemy>();
-        for (int i = 1; i <= this.numOfEnemies; i++)
-        {
-            this.enemies.Add(new Enemy(TILE_SIZE * i, 50, 20, true));
-        }
+        this.SpawnEnemies();
     }
     public void Draw()
     {
@@ -37,31 +38,29 @@ public class MainGameScene : IScene
         {
             enemy.Update();
         }
+
+        if (enemies.Count == 0)
+        {
+            this.increaseLevelCounter--;
+            if (this.increaseLevelCounter <= 0)
+            {
+                numOfRows++;
+                this.SpawnEnemies();
+                this.increaseLevelCounter = MAX_LVL_COUNTER;
+            }
+        }
         return player.Update(enemies);
     }
-=======
-﻿using Raylib_cs;
 
-namespace spaceInvadersRaylib.Scenes;
-
-public class MainGameScene : IScene
-{
-    private Player player;
-
-    public MainGameScene()
+    private void SpawnEnemies()
     {
-        player = new Player();
+        // !! Start indexing from 1
+        for (int i = 1; i <= this.numOfRows; i++)
+        {
+            for (int j = 1; j <= this.numOfEnemies; j++)
+            {
+                this.enemies.Add(new Enemy(TILE_SIZE * j, TILE_SIZE * i, 20, true));
+            }
+        }
     }
-    public void Draw()
-    {
-        Raylib.ClearBackground(Color.Black);
-        player.Draw();
-    }
-
-    public SceneType Update()
-    {
-        player.Update();
-        return SceneType.MainGame;
-    }
->>>>>>> 418dfdb3ed773db8e702e97e6dce5cdbce3295a8
 }

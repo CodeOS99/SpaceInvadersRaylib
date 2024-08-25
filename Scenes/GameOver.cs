@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 ﻿using Raylib_cs;
 using spaceInvadersRaylib.GUI;
 
@@ -25,20 +24,4 @@ public class GameOver : IScene
         }
         return SceneType.GameOver;
     }
-
-=======
-﻿namespace spaceInvadersRaylib.Scenes;
-
-public class GameOver : IScene
-{
-    public SceneType Update()
-    {
-        return SceneType.GameOver;
-    }
-
-    public void Draw()
-    {
-
-    }
->>>>>>> 418dfdb3ed773db8e702e97e6dce5cdbce3295a8
 }
