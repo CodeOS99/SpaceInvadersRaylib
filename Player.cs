@@ -136,7 +136,6 @@ public class Player
         for (int i = bulletRemovalIdx.Count - 1; i >= 0; i--)
         {
             bullets.RemoveAt(bulletRemovalIdx[i]);
-            Console.WriteLine(bullets.Count);
         }
 
         for (int j = enemyRemovalIdx.Count - 1; j >= 0; j--)
