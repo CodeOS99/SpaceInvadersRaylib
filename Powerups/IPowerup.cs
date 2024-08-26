@@ -1,4 +1,6 @@
-﻿namespace spaceInvadersRaylib.Powerups;
+﻿using Raylib_cs;
+
+namespace spaceInvadersRaylib.Powerups;
 
 public interface IPowerup
 {

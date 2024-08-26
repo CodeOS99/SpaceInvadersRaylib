@@ -46,6 +46,7 @@ public class MainGameScene : IScene
             {
                 numOfRows++;
                 this.SpawnEnemies();
+                Globals.enemyDx += 5;
                 this.increaseLevelCounter = MAX_LVL_COUNTER;
             }
         }
@@ -59,7 +60,7 @@ public class MainGameScene : IScene
         {
             for (int j = 1; j <= this.numOfEnemies; j++)
             {
-                this.enemies.Add(new Enemy(TILE_SIZE * j, TILE_SIZE * i, 20, true));
+                this.enemies.Add(new Enemy(TILE_SIZE * j, TILE_SIZE * i, 10, true, 1));
             }
         }
     }

@@ -13,18 +13,26 @@ public class Player
     public int speed;
     public Color color = Color.Red;
     public List<Bullet> bullets;
+    private int bulletSpeed;
     private Random random;
     private List<IPowerup> powerups;
+    private int MAX_FORWARD; // The max the player can go forward
+    private int bulletPierce;
+    private int numOfBulletsInOneGo;
 
     public Player()
     {
         this.x = Globals.screenWidth / 2;
         this.y = Globals.screenHeight - 50;
+        this.MAX_FORWARD = Globals.screenHeight - 250;
         this.r = 20;
         this.speed = 5;
         this.bullets = new List<Bullet>();
         this.powerups = new List<IPowerup>();
         this.random = new Random();
+        this.bulletPierce = 1;
+        this.bulletSpeed = -5;
+        this.numOfBulletsInOneGo = 1;
     }
     public void Draw()
     {
@@ -93,7 +101,7 @@ public class Player
 
         if (this.x < this.r) this.x = this.r; // Left wall
         if (this.x > Globals.screenWidth - this.r) this.x = Globals.screenWidth - this.r; // Right wall
-        if (this.y < this.r) this.y = this.r; // Top wall
+        if (this.y < this.MAX_FORWARD - this.r) this.y = this.MAX_FORWARD - this.r; // Top wall
         if (this.y > Globals.screenHeight - this.r) this.y = Globals.screenHeight - this.r; // Bottom wall
         return CheckCollisionWithEnemies(enemies);
     }
@@ -116,19 +124,10 @@ public class Player
                 if (Raylib.CheckCollisionCircles(new Vector2(bullets[i].x, bullets[i].y), bullets[i].r,
                         new Vector2(enemies[j].x, enemies[j].y), enemies[j].r))
                 {
-                    if (!bulletRemovalIdx.Contains(i)) bulletRemovalIdx.Add(i);
-                    if (random.Next(0, 100) <= 1)
-                    {
-                        int powerUp = random.Next(0, 0);
-                        switch (powerUp)
-                        {
-                            case 0:
-                                powerups.Add(new IncreasedNumberOfBullets(enemies[j].x, enemies[j].y, 5, Color.DarkPurple));
-                                break;
-                        }
-                    }
+                    bullets[i].pierce--;
+                    if (!bulletRemovalIdx.Contains(i) && bullets[i].pierce == 0) bulletRemovalIdx.Add(i);
+                    this.SpawnPowerup(enemies[j]);
                     if (!enemyRemovalIdx.Contains(j)) enemyRemovalIdx.Add(j);
-                    Globals.enemyDx *= -1;
                 }
             }
         }
@@ -157,7 +156,7 @@ public class Player
                 return SceneType.GameOver;
             }
         }
-        
+
         // Check if player collides with enemy bullets
         foreach (Enemy enemy in enemies)
         {
@@ -176,7 +175,54 @@ public class Player
 
     private void Shoot()
     {
-        Bullet bullet = new Bullet(this.x, this.y, -5, Color.Red);
-        this.bullets.Add(bullet);
+        for (int _ = 0; _ < this.numOfBulletsInOneGo; _++)
+        {
+            Bullet bullet = new Bullet(this.x, this.y, this.bulletSpeed, Color.Red, this.bulletPierce);
+            this.bullets.Add(bullet);
+        }
+    }
+
+    public void IncreasePierce(int n)
+    {
+        this.bulletPierce += n;
+    }
+
+    public void IncreaseSpeed(int n)
+    {
+        this.speed += n;
+    }
+
+    private void SpawnPowerup(Enemy targetEnemy)
+    {
+        if (random.Next(0, 100) <= 10)
+        {
+            int powerUp = random.Next(0, 5);
+            switch (powerUp)
+            {
+                case 0:
+                    powerups.Add(new IncreasedNumberOfBullets(targetEnemy.x, targetEnemy.y, 5, Color.DarkPurple));
+                    break;
+                case 1:
+                    powerups.Add(new IncreasePiercePowerup(targetEnemy.x, targetEnemy.y, 5, Color.DarkGreen));
+                    break;
+                case 2:
+                    powerups.Add(new IncreaseSpeedPowerup(targetEnemy.x, targetEnemy.y, 5, Color.DarkBlue));
+                    break;
+                case 3:
+                    powerups.Add(new IncreaseBulletSpeedPowerup(targetEnemy.x, targetEnemy.y, 5, Color.White));
+                    break;
+            }
+        }
+
+    }
+
+    public void IncreaseUpSpeedOfBullets(int n)
+    {
+        this.bulletSpeed -= n;
+    }
+
+    public void IncreaseNumberOfBulletsInOneGo(int n)
+    {
+        this.numOfBulletsInOneGo += n;
     }
 }

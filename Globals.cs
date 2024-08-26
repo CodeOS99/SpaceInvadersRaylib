@@ -8,7 +8,6 @@ public static class Globals
     public static string windowTitle = "Space Invaders";
     public static int targetFPS = 60;
 
-    public static int enemyDx = 5;
-
+    public static int enemyDx = 15;
     public static int maxPlayerBullets = 2;
 }
